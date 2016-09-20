@@ -38,6 +38,9 @@ cat minitwit.env
 CONTAINER_ID="$(docker run -d --env-file=minitwit.env "${DOCKER_IMG}")"
 
 function cleanup {
+	docker logs "$CONTAINER_ID" > minitwit.log
+	docker logs "$MYSQLCONTAINER_ID" > mysql.log
+	
   rm -f "${COOKIE_JAR}"
   docker rm -f "$CONTAINER_ID"
   docker rm -f "$MYSQLCONTAINER_ID"
