@@ -14,7 +14,7 @@ DOCKER_IMG="${DOCKER_IMG:-karlkfi/minitwit}"
 COOKIE_JAR="cookies-$(date | md5sum | head -c 10).txt"
 
 cat > minitwit.env << EOF
-SPRING_DATASOURCE_URL=jdbc:mysql://${MYSQL_IP}:3306/minitwit?autoReconnect=true&useSSL=false
+SPRING_DATASOURCE_URL=jdbc:mysql://mysql.marathon.mesos:3306/minitwit?autoReconnect=true&useSSL=false
 SPRING_DATASOURCE_USERNAME=minitwit
 SPRING_DATASOURCE_PASSWORD=minitwit
 SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
