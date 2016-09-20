@@ -4,6 +4,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 set -o xtrace
+set -e -x
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE}")/.." && pwd -P)"
 
@@ -31,6 +32,8 @@ SPRING_DATASOURCE_PASSWORD=minitwit
 SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
 SPRING_DATASOURCE_PLATFORM=mysql
 EOF
+
+cat minitwit.env
 
 CONTAINER_ID="$(docker run -d --env-file=minitwit.env "${DOCKER_IMG}")"
 
