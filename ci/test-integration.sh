@@ -13,10 +13,21 @@ DOCKER_IMG="${DOCKER_IMG:-karlkfi/minitwit}"
 
 COOKIE_JAR="cookies-$(date | md5sum | head -c 10).txt"
 
+cat > mysql.env << EOF
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=minitwit
+MYSQL_USER=minitwit
+MYSQL_PASSWORD=minitwit
+EOF
+
+MYSQLCONTAINER_ID="$(docker run -d --name=mysql --env-file=mysql.env mysql:5.7.15)"
+
+MYSQL_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${MYSQLCONTAINER_ID})
+
 cat > minitwit.env << EOF
-SPRING_DATASOURCE_URL=jdbc:mysql://mysql.marathon.mesos:3306/minitwit3?autoReconnect=true&useSSL=false
-SPRING_DATASOURCE_USERNAME=minitwit3
-SPRING_DATASOURCE_PASSWORD=minitwit3
+SPRING_DATASOURCE_URL=jdbc:mysql://${MYSQL_IP}:3306/minitwit?autoReconnect=true&useSSL=false
+SPRING_DATASOURCE_USERNAME=minitwit
+SPRING_DATASOURCE_PASSWORD=minitwit
 SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
 SPRING_DATASOURCE_PLATFORM=mysql
 EOF
@@ -26,6 +37,7 @@ CONTAINER_ID="$(docker run -d --env-file=minitwit.env "${DOCKER_IMG}")"
 function cleanup {
   rm -f "${COOKIE_JAR}"
   docker rm -f "$CONTAINER_ID"
+  docker rm -f "$MYSQLCONTAINER_ID"
 }
 trap cleanup EXIT
 
